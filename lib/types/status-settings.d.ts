@@ -1,5 +1,4 @@
 /** Running-turn status preference stored in the Host user-settings document. */
-import z from '@deepseek-ai/schemastery';
 /** Settings namespace owned by this plugin. */
 export declare const STATUS_NAMESPACE = "ui-status-label";
 /** Field carrying the running-turn status text shown in the chat view. */
@@ -15,6 +14,4 @@ export interface StatusLabelSettings {
     /** Status text shown while a turn is running. */
     statusLabel: string;
 }
-/** Durable status-label schema; also the wire envelope the browser scope validates against. */
-export declare const StatusLabelSettingsSchema: z<StatusLabelSettings>;
 //# sourceMappingURL=status-settings.d.ts.map
