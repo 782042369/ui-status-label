@@ -1,5 +1,7 @@
 # dsh-ui-status-label
 
+把你的鲸鱼娘思考时的 deep diving 自定义成任意你想要的样子。
+
 为 **dsh Web** 聊天视图提供可配置的运行中轮次状态文案：General 设置区的一行文本输入，加上聊天视图在运行时钟旁读取的可选 `conversationStatus` 服务。插件注册持久的 `ui-status-label` settings 命名空间（默认 `小难梁在0721`）；在设置行输入新文字后，聊天视图在轮次运行期间（等待首 token、工具执行、流式输出）显示的状态文案随之更新。选择持久化在 `$DSH_HOME/settings.yaml`，跟随同一个用户 home 跨越 Web 端口。
 
 ## 前提
