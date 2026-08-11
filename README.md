@@ -1,50 +1,50 @@
 # dsh-ui-status-label
 
-Configurable running-turn status text for the **dsh Web** chat view: a General Settings text row plus the optional `conversationStatus` service the conversation chat view reads next to its running clock. The plugin registers the durable `ui-status-label` settings namespace (default `小难梁在0721`); typing a new label into the settings row updates what the chat view shows while a turn runs (first-token wait, tool execution, streaming). The choice persists in `$DSH_HOME/settings.yaml`, so it follows the same user home across Web ports.
+为 **dsh Web** 聊天视图提供可配置的运行中轮次状态文案：General 设置区的一行文本输入，加上聊天视图在运行时钟旁读取的可选 `conversationStatus` 服务。插件注册持久的 `ui-status-label` settings 命名空间（默认 `小难梁在0721`）；在设置行输入新文字后，聊天视图在轮次运行期间（等待首 token、工具执行、流式输出）显示的状态文案随之更新。选择持久化在 `$DSH_HOME/settings.yaml`，跟随同一个用户 home 跨越 Web 端口。
 
-## Prerequisites
+## 前提
 
-- **dsh Web** (`dsh --profile web`, or a custom Web composition). The plugin is browser-surface-only; headless/TUI profiles gain nothing.
-- All `@deepseek-ai/*` dependencies are **peer dependencies provided by the dsh installation** — they are not published to the public npm registry. Do not `pnpm install` this package standalone expecting them to resolve; `.npmrc` / `pnpm-workspace.yaml` in this repo disable pnpm's peer auto-install for that reason.
+- **dsh Web**（`dsh --profile web` 或自定义 Web 组合）。本插件只面向浏览器交互面；headless/TUI profile 装它没有意义。
+- 所有 `@deepseek-ai/*` 依赖都是**由 dsh 安装提供的 peer 依赖**——它们没有发布到公共 npm registry。不要单独 `pnpm install` 本包并期待它们可解析；本仓库的 `.npmrc` / `pnpm-workspace.yaml` 为此关闭了 pnpm 的 peer 自动安装。
 
-## Install
+## 安装
 
-The package declares `dsh.bundle`, so `dsh plugin add` activates its `cordis.patch.yml` layer automatically.
+本包声明了 `dsh.bundle`，`dsh plugin add` 会自动激活它的 `cordis.patch.yml` 层。
 
 ```sh
-# From a published tarball (recommended; contains prebuilt lib/)
+# 用发布的 tarball（推荐，内含预构建 lib/）
 dsh plugin --profile web add ./dsh-ui-status-label-0.1.0.tgz
 
-# Or directly from this git repository (runs the prepare build)
+# 或直接从本 git 仓库安装（会跑 prepare 构建）
 dsh plugin --profile web add github:dsh-external/ui-status-label
 ```
 
-Remove it with `dsh plugin --profile web remove dsh-ui-status-label`.
+卸载用 `dsh plugin --profile web remove dsh-ui-status-label`。
 
-> If your dsh release already mounts the `ui-status-label` row in-box through `@deepseek-ai/dsh-web-app`, do not install this package standalone as well — the `ui-status-label` settings namespace would register twice.
+> 如果你的 dsh 发行版已通过 `@deepseek-ai/dsh-web-app` 在盒内挂载 `ui-status-label` 行，请勿再独立安装本包——`ui-status-label` settings 命名空间会注册两次。
 
-## Settings
+## 设置
 
-General Settings → `运行状态文案` (Running status text): the text field's value is the label the chat view shows while a turn runs. Clearing the field keeps the schema default `小难梁在0721`. The label is per-user, not per-session, and capped at 40 characters.
+General 设置 →「运行状态文案」：文本框的值就是轮次运行期间聊天视图显示的状态文案。清空输入框会回到 schema 默认值 `小难梁在0721`。文案按用户而非按会话，上限 40 字符。
 
-## Building from source
+## 从源码构建
 
 ```sh
-pnpm install        # dev tooling only; @deepseek-ai peers stay unresolved by design
-pnpm run bundle     # emits lib/index.js (node half) + lib/client.js (browser half)
-pnpm pack           # tarball with lib/ + cordis.patch.yml
+pnpm install        # 仅开发工具；@deepseek-ai peer 按设计不解析
+pnpm run bundle     # 产出 lib/index.js（node 半边）+ lib/client.js（浏览器半边）
+pnpm pack           # tarball，含 lib/ 与 cordis.patch.yml
 ```
 
-Type declarations (`lib/types`) are generated in the monorepo build; the tarball ships them. A git install rebuilds `lib/` through the `prepare` script but does not regenerate `lib/types`.
+类型声明（`lib/types`）在 monorepo 构建中生成；tarball 会携带它们。git 安装通过 `prepare` 脚本重建 `lib/`，但不会重新生成 `lib/types`。
 
-## Architecture
+## 结构
 
-- `src/schema.ts` — node-half only; the `ui-status-label` settings schema (kept out of the browser bundle so it never depends on schemastery at runtime).
-- `src/status-settings.ts` — constants and the section type shared by both halves.
-- `src/client/StatusLabelRow.tsx` — the General Settings text row.
-- `src/client/status-label-policy.ts` — live snapshot store, durable write-through, and adoption of Host-side changes.
-- `src/client/index.ts` — registers the row and provides the `conversationStatus` service; composing this plugin out of cordis.yml leaves ui-conversation's built-in label in place.
+- `src/schema.ts` — 仅 node 半边；`ui-status-label` 设置 schema（放在浏览器 bundle 之外，运行时不依赖 schemastery）。
+- `src/status-settings.ts` — 两个半边共享的常量与 section 类型。
+- `src/client/StatusLabelRow.tsx` — General 设置文本行。
+- `src/client/status-label-policy.ts` — 实时 snapshot store、持久化写穿、以及采纳 Host 侧变更。
+- `src/client/index.ts` — 注册设置行并提供 `conversationStatus` 服务；把本插件从 cordis.yml 组合掉后，ui-conversation 的内置文案保持原样。
 
-## Model Experience
+## 模型体验
 
-None — the settings row and service only feed browser presentation; nothing here reaches a model request.
+无——设置行与服务只影响浏览器呈现；本包不会触及任何模型请求。
