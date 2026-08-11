@@ -1,0 +1,3 @@
+# The @deepseek-ai/* peers are provided by the dsh installation, not npm;
+# never let pnpm try to resolve them from the registry.
+autoInstallPeers: false
