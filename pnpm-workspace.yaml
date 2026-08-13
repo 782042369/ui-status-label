@@ -1,3 +1,7 @@
-# The @deepseek-ai/* peers are provided by the dsh installation, not npm;
-# never let pnpm try to resolve them from the registry.
+# dsh-* peers come from the dsh installation; the public npm publish chain is
+# still incomplete (some transitive packages are not yet published), so never
+# let pnpm auto-install peers from the registry.
 autoInstallPeers: false
+minimumReleaseAgeExclude:
+  - '@deepseek-ai/cosmokit@1.8.2'
+  - '@deepseek-ai/schemastery@3.18.1'

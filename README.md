@@ -7,7 +7,7 @@
 ## 前提
 
 - **dsh Web**（`dsh --profile web` 或自定义 Web 组合）。本插件只面向浏览器交互面；headless/TUI profile 装它没有意义。
-- 所有 `@deepseek-ai/*` 依赖都是**由 dsh 安装提供的 peer 依赖**
+- 所有 `@deepseek-ai/*` 依赖都由 **dsh 安装**提供（peer 依赖，官方 npm 发布链尚不完整）；请用 `dsh plugin add` 安装，不要单独 `pnpm install` 期望完整解析。
 
 ## 安装
 
@@ -19,6 +19,9 @@ dsh plugin --profile web add ./dsh-ui-status-label-0.1.0.tgz
 
 # 或直接从本 git 仓库安装（会跑 prepare 构建）
 dsh plugin --profile web add github:dsh-external/ui-status-label
+
+# 或从 npm（发布后可用）
+dsh plugin --profile web add dsh-ui-status-label
 ```
 
 卸载用 `dsh plugin --profile web remove dsh-ui-status-label`。
@@ -40,12 +43,12 @@ dsh plugin --profile web add github:dsh-external/ui-status-label
 ## 从源码构建
 
 ```sh
-pnpm install        # 仅开发工具；@deepseek-ai peer 按设计不解析
+pnpm install        # 安装本地依赖（dsh-settings、schemastery 等已发布 npm 的直接依赖）
 pnpm run bundle     # 产出 lib/index.js（node 半边）+ lib/client.js（浏览器半边）
 pnpm pack           # tarball，含 lib/ 与 cordis.patch.yml
 ```
 
-类型声明（`lib/types`）在 monorepo 构建中生成；tarball 会携带它们。git 安装通过 `prepare` 脚本重建 `lib/`，但不会重新生成 `lib/types`。
+peer 依赖（dsh-* 核心包）按设计不在此解析——它们由 dsh 运行时提供。类型声明（`lib/types`）在 monorepo 构建中生成；tarball 会携带它们。git 安装通过 `prepare` 脚本重建 `lib/`，但不会重新生成 `lib/types`。
 
 ## 结构
 
