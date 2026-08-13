@@ -28,6 +28,16 @@ dsh plugin --profile web add dsh-ui-status-label
 
 > 如果你的 dsh 发行版已通过 `@deepseek-ai/dsh-web-app` 在盒内挂载 `ui-status-label` 行，请勿再独立安装本包——`ui-status-label` settings 命名空间会注册两次。
 
+## 兼容性
+
+本插件的文案注入依赖 ui-conversation 的 `conversationStatus` 可选服务扩展点（与官方已有的 `chatFileMentions` 同款模式）。该扩展点已随本插件的上游改动合入 deepseek-harness 仓库（`packages/client/ui-conversation`：`contract/slots.ts` 的 `ConversationStatus` / `DEFAULT_STATUS_LABEL`、`ChatView.tsx` 的 `TurnStatus` 注入、`apply.ts` 的可选服务读取）。
+
+**在官方合入该扩展点之前**，针对官方发布版（`0.0.1-rc.1` / `0.1.0-rc.6`）：
+
+- 安装本身正常——本插件的依赖范围 `>=0.0.1-rc.1 <0.2.0` 已覆盖两条版本线，peer 不再冲突。
+- 设置行会出现，但官方版 `ChatView` 尚未读取 `conversationStatus` 服务，状态文案保持官方的 `Deep diving...`（功能暂不生效，不报错）。
+- 合入扩展点后无需改动本插件，文案注入立即生效。
+
 ## 设置
 
 安装后，修改入口在 dsh Web 页面里：

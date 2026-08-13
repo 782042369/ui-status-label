@@ -1,0 +1,116 @@
+﻿diff --git a/ChatView.tsx b/ChatView.tsx
+index 58e63b3..4dbaa1b 100644
+--- a/ChatView.tsx
++++ b/ChatView.tsx
+@@ -104,10 +104,12 @@ function runningTurnStartTime(timeline: ConversationTimelineSnapshot): number |
+ }
+ 
+ /** Turn-level model activity label retained across first-token, tool, and streaming phases. */
+-function TurnStatus({ startTime, t }: {
++function TurnStatus({ startTime, statusLabel, t }: {
+   /** The running turn's logged `turn/start` time; null falls back to mount
+    *  time when that boundary is outside the window. */
+   startTime: number | null
++  /** Status text from the optional conversationStatus provider. */
++  statusLabel: string
+   /** The owning view's locale seat. */
+   t: ChatViewSlotProps['t']
+ }) {
+@@ -129,7 +131,7 @@ function TurnStatus({ startTime, t }: {
+   const showClock = elapsedMs >= 15_000
+   return (
+     <div className={css.turnStatus} role="status" aria-live="polite">
+-      Deep diving...
++      {statusLabel}
+       {showClock && (
+         <span className={css.turnStatusClock} aria-hidden>
+           {formatRunDuration(elapsedMs, t)}
+@@ -145,7 +147,7 @@ function TurnStatus({ startTime, t }: {
+  */
+ export function ChatView({
+   useSession, useSessions, useStore, renderSlot, sessionId, openFile, loadOlder, loadImage, inspectCall, chatScroll, forkAt,
+-  fileMentions, t,
++  fileMentions, statusLabel, t,
+ }: ChatViewSlotProps) {
+   const order = useSession(s => s.chat.order)
+   const nodeStore = useSession(s => s.chat.nodes)
+@@ -400,7 +402,7 @@ export function ChatView({
+               double-render the same wait. */}
+           {/* Turn-level loading signal: rides the whole running turn (first-token
+               wait, tool execution, streaming) so it never flickers per step. */}
+-          {running && <TurnStatus startTime={runningTurnStart} t={t} />}
++          {running && <TurnStatus startTime={runningTurnStart} statusLabel={statusLabel()} t={t} />}
+           {pendingSteering.map(item => (
+             <PendingSteeringBubble key={item.id} content={item.content} loadImage={loadImage} t={t} />
+           ))}
+diff --git a/apply.ts b/apply.ts
+index f57caea..e691a80 100644
+--- a/apply.ts
++++ b/apply.ts
+@@ -16,6 +16,7 @@ import type {
+   ComposerChainProps, ConversationInjected, ConversationSessionHeaderInjected, ConversationSessionInjected,
+   DetailsInjected,
+ } from './contract/slots.ts'
++import { DEFAULT_STATUS_LABEL } from './contract/slots.ts'
+ import type { InputNotice } from './input/contract.ts'
+ import { createChatStore } from './stores.ts'
+ import { ConversationController, UnsupportedImageMediaTypeError } from './service.ts'
+@@ -421,6 +422,7 @@ export function apply(ctx: Context): void {
+               // Fork or child-rename failure keeps the source view untouched.
+             })
+         },
++        statusLabel: () => ctx.get('conversationStatus')?.label() ?? DEFAULT_STATUS_LABEL,
+       }
+     },
+   }, ChatView)
+diff --git a/client-index.ts b/client-index.ts
+index 0574aa8..2e7d441 100644
+--- a/client-index.ts
++++ b/client-index.ts
+@@ -35,6 +35,8 @@ export type {
+   ConvViewProps, DetailsInjected, DetailsSlotProps, DetailsToolOwnerProps, EmptyWorkspaceOwnerProps,
+   TurnTailOwnerProps, UseChatNodeTurnData,
+ } from './contract/slots.ts'
++export { DEFAULT_STATUS_LABEL } from './contract/slots.ts'
++export type { ConversationStatus } from './contract/slots.ts'
+ // Export discipline: packages/client/AGENTS.md.
+ 
+ declare module '@deepseek-ai/cordis' {
+diff --git a/slots.ts b/slots.ts
+index 2125914..9b4309d 100644
+--- a/slots.ts
++++ b/slots.ts
+@@ -313,6 +313,33 @@ declare module '@deepseek-ai/cordis' {
+   }
+ }
+ 
++/**
++ * Default running-turn status text shown while no optional
++ * {@link ConversationStatus} provider is composed in. Mirrors the
++ * `statusLabel` default of the ui-status-label plugin so composing that
++ * provider in or out leaves the label unchanged.
++ */
++export const DEFAULT_STATUS_LABEL = '小难梁在0721'
++
++/**
++ * Optional running-turn status provider, consumed via `ctx.get('conversationStatus')`
++ * (optional-service convention): the chat view asks it for the status text
++ * shown next to the running clock and falls back to {@link DEFAULT_STATUS_LABEL}
++ * when the service is absent — the providing plugin composed out of cordis.yml
++ * — leaving the built-in label in place.
++ */
++export interface ConversationStatus {
++  /** Current running-turn status text. */
++  label(): string
++}
++
++declare module '@deepseek-ai/cordis' {
++  interface Context {
++    /** Running-turn status provider (ui-status-label); reach via ctx.get — optional. */
++    conversationStatus?: ConversationStatus
++  }
++}
++
+ /**
+  * Owner currency of the chat view's turn-tail hole: the engine-owned Turn and
+  * the closing assistant's anchor. Registrants read their own typed Turn data

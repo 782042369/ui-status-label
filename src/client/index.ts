@@ -7,7 +7,6 @@
  * and the provider, leaving ui-conversation's built-in label in place.
  */
 import type { Context } from '@deepseek-ai/cordis'
-import type { ConversationStatus } from '@deepseek-ai/dsh-client-ui-conversation/client'
 // Type-only: the ctx.settingsScope Context merge. Cross-plugin collaboration
 // goes through the service, never a value import (client bundle purity gate).
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
@@ -16,6 +15,17 @@ import { StatusLabelRow } from './StatusLabelRow.tsx'
 import { StatusLabelPolicy } from './status-label-policy.ts'
 import { en, NS, zh, type StatusLabelKey } from './locales.ts'
 import { STATUS_NAMESPACE, type StatusLabelSettings } from '../status-settings.ts'
+
+/**
+ * Optional running-turn status provider the conversation chat view reads via
+ * `ctx.get('conversationStatus')`. Declared here rather than imported from
+ * ui-conversation so the plugin stays installable against releases that do
+ * not yet ship the contract (service faces are structural at runtime).
+ */
+export interface ConversationStatus {
+  /** Current running-turn status text. */
+  label(): string
+}
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
