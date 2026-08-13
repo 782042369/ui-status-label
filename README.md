@@ -7,7 +7,7 @@
 ## 前提
 
 - **dsh Web**（`dsh --profile web` 或自定义 Web 组合）。本插件只面向浏览器交互面；headless/TUI profile 装它没有意义。
-- 所有 `@deepseek-ai/*` 依赖都是**由 dsh 安装提供的 peer 依赖**——它们没有发布到公共 npm registry。不要单独 `pnpm install` 本包并期待它们可解析；本仓库的 `.npmrc` / `pnpm-workspace.yaml` 为此关闭了 pnpm 的 peer 自动安装。
+- 所有 `@deepseek-ai/*` 依赖都是**由 dsh 安装提供的 peer 依赖**
 
 ## 安装
 
