@@ -36,9 +36,11 @@ Third-party plugins (for example the community `dsh-ui-status-label` plugin) wan
 
 ## Testing
 
-- `packages/client/ui-conversation/tests/apply-inject.spec.tsx` — new case: absent provider resolves `DEFAULT_STATUS_LABEL`; a provided `conversationStatus` wins per call.
-- `packages/client/ui-conversation/tests/chat-view.spec.tsx` — status renders the injected label; custom label case.
-- Full `pnpm run test:gui` and `pnpm run typecheck` pass locally.
+Tests are included in `UPSTREAM-EXTENSION.patch` (apply to `packages/client/ui-conversation/`):
+
+- `tests/apply-inject.client.spec.tsx` — new case: absent provider resolves `DEFAULT_STATUS_LABEL`; a provided `conversationStatus` wins per call.
+- `tests/chat-view.client.spec.tsx` — harness now supplies the `statusLabel` inject; the status renders the injected label.
+- Full `pnpm run test:gui` and `pnpm run typecheck` pass locally on the same changes.
 
 ## Related
 
