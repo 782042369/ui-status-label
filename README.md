@@ -7,7 +7,7 @@
 ## 前提
 
 - **dsh Web**（`dsh --profile web` 或自定义 Web 组合）。本插件只面向浏览器交互面；headless/TUI profile 装它没有意义。
-- 所有 `@deepseek-ai/*` 依赖都由 **dsh 安装**提供（peer 依赖，官方 npm 发布链尚不完整）；请用 `dsh plugin add` 安装，不要单独 `pnpm install` 期望完整解析。
+- 依赖分两类：`@deepseek-ai/cordis`、`dsh-client-*` 等为 **peer 依赖**（由 dsh 安装提供）；`@deepseek-ai/dsh-settings`、`schemastery` 为**直接依赖**（从 npm 安装）。官方 npm 发布链尚不完整（如 `@deepseek-ai/dsh-compact` 未发布），完整 `pnpm install` 仍会失败——请用 `dsh plugin add` 安装。
 
 ## 安装
 
