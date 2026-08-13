@@ -18,7 +18,7 @@
 dsh plugin --profile web add ./dsh-ui-status-label-0.1.0.tgz
 
 # 或直接从本 git 仓库安装（会跑 prepare 构建）
-dsh plugin --profile web add github:dsh-external/ui-status-label
+dsh plugin --profile web add github:alingalingling/ui-status-label
 
 # 或从 npm（发布后可用）
 dsh plugin --profile web add dsh-ui-status-label

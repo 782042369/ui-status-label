@@ -7,7 +7,7 @@
   "types": "lib/types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dsh-external/ui-status-label.git"
+    "url": "git+https://github.com/alingalingling/ui-status-label.git"
   },
   "exports": {
     ".": {
