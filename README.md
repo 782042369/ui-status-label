@@ -7,39 +7,50 @@
 ## 前提
 
 - **dsh Web**（`dsh --profile web` 或自定义 Web 组合）。本插件只面向浏览器交互面；headless/TUI profile 装它没有意义。
-- 依赖分两类：`@deepseek-ai/cordis`、`dsh-client-*` 等为 **peer 依赖**（由 dsh 安装提供）；`@deepseek-ai/dsh-settings`、`schemastery` 为**直接依赖**（从 npm 安装）。官方 npm 发布链尚不完整（如 `@deepseek-ai/dsh-compact` 未发布），完整 `pnpm install` 仍会失败——请用 `dsh plugin add` 安装。
+- 依赖分两类：`@deepseek-ai/cordis`、`dsh-client-*` 等为 **peer 依赖**（由 dsh 安装提供）；`@deepseek-ai/dsh-settings`、`schemastery` 为**直接依赖**（从 npm 安装）。仓库内的 `pnpm-workspace.yaml` 已关闭 peer 自动安装（`autoInstallPeers: false`），clone 后直接 `pnpm install` 即可完成直接依赖。
 
 ## 安装
 
-本包声明了 `dsh.bundle`，`dsh plugin add` 会自动激活它的 `cordis.patch.yml` 层。
+本包声明了 `dsh.bundle`，`dsh plugin add` 会自动激活它的 `cordis.patch.yml` 层（把 `dsh-ui-status-label` 行插入 Web roster）。
 
 ```sh
-# 用发布的 tarball（推荐，内含预构建 lib/）
+# ① tarball（需要先在仓库根执行 pnpm pack 生成 dsh-ui-status-label-0.1.0.tgz）
 dsh plugin --profile web add ./dsh-ui-status-label-0.1.0.tgz
 
-# 或直接从本 git 仓库安装（会跑 prepare 构建）
+# ② git 仓库直装
 dsh plugin --profile web add github:alingalingling/ui-status-label
 
-# 或从 npm（发布后可用）
+# ③ npm（当前 npm 上尚未发布，发布后可用）
 dsh plugin --profile web add dsh-ui-status-label
 ```
 
+**git 安装注意**：pnpm ≥10 默认**阻止运行 git 依赖的 `prepare` 脚本**——首次 `add` 可能报 "Ignored build scripts"，报错会打印一个包 key。把它加入 profile 目录下 `pnpm-workspace.yaml` 的 `allowBuilds` 后重新 `add` 即可（这是**允许执行该包构建代码**的授权，只对你信任的包开启）：
+
+```yaml
+allowBuilds:
+  dsh-ui-status-label: true
+```
+
+不过本仓库**已把预构建的 `lib/`（含类型声明）随源码一起提交**，git 安装即使跳过 `prepare` 也能直接用产物；`allowBuilds` 只在你想从源码重新构建时才需要。
+
 卸载用 `dsh plugin --profile web remove dsh-ui-status-label`。
 
-> 仅在使用内置了本插件的定制 dsh 构建（如 deepseek-harness 仓库本地构建）时，不要重复安装——`ui-status-label` settings 命名空间会注册两次。官方发布版未内置本插件，正常安装即可。
+> 仅在使用**内置了本插件的定制 dsh 构建**（如 deepseek-harness 仓库本地构建）时，不要重复安装——`ui-status-label` settings 命名空间会注册两次。官方发布版未内置本插件，正常安装即可。
+
+## 安装后生效
+
+装完需要**重启 dsh web 进程**（当前运行中的 GUI 不会热加载新插件 bundle），重启后刷新页面即可在设置里看到入口。
 
 ## 兼容性
 
 本插件同时提供两条生效路径，**官方正式版（含 0.1.0-rc.6）即可直接生效**：
 
-1. **DOM 注入（默认兜底）**：插件监听聊天视图的运行状态元素，把官方硬编码的 `Deep diving...` 文本替换为你配置的文案。不依赖官方任何新机制，装完即用。
+1. **DOM 注入（默认兜底）**：插件监听聊天视图的运行状态元素（官方标记 `role="status"` + 硬编码 `Deep diving...`），把文本替换为你配置的文案。不依赖官方任何新机制，装完即用。
 2. **`conversationStatus` 可选服务**：当 ui-conversation 带上了扩展点（随 `UPSTREAM-EXTENSION.patch` 合入官方后），聊天视图直接渲染你配置的文案，DOM 注入自动让位，两者不会冲突。
-
-- 安装请用 `dsh plugin add`，不要单独 `pnpm install` 期望完整解析（官方 npm 发布链尚不完整，部分传递依赖未发布；本仓库的 `pnpm-workspace.yaml` 为此关闭了 peer 自动安装）。
 
 ## 设置
 
-安装后，修改入口在 dsh Web 页面里：
+安装并重启后，修改入口在 dsh Web 页面里：
 
 1. 打开 dsh Web 页面（默认 `http://127.0.0.1:3080`）
 2. 点击页面左下角的**齿轮图标**，打开设置面板
@@ -52,12 +63,12 @@ dsh plugin --profile web add dsh-ui-status-label
 ## 从源码构建
 
 ```sh
-pnpm install        # 安装本地依赖（dsh-settings、schemastery 等已发布 npm 的直接依赖）
-pnpm run bundle     # 产出 lib/index.js（node 半边）+ lib/client.js（浏览器半边）
-pnpm pack           # tarball，含 lib/ 与 cordis.patch.yml
+pnpm install        # 安装直接依赖（dsh-settings、schemastery 等，均已发布 npm）
+pnpm run bundle     # 重建 JS 产物：lib/index.js（node 半边）+ lib/client.js（浏览器半边）+ lib/invariant.js
+pnpm pack           # 生成 tarball（含 lib/ 与 cordis.patch.yml）
 ```
 
-peer 依赖（dsh-* 核心包）按设计不在此解析——它们由 dsh 运行时提供。类型声明（`lib/types`）在 monorepo 构建中生成；tarball 会携带它们。git 安装通过 `prepare` 脚本重建 `lib/`，但不会重新生成 `lib/types`。
+`lib/`（含 `lib/types` 类型声明）已**预构建并随仓库提交**；`prepare`/`bundle`（tsdown）只重建 JS 产物，**不重新生成 `.d.ts`**——类型由仓库维护，改动源码后如需同步类型请对照 `lib/types` 更新。
 
 ## 结构
 
