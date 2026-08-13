@@ -30,6 +30,13 @@ export declare class StatusLabelPolicy {
      */
     setStatusLabel(text: string): void;
     /**
+     * Resolve the label actually shown: an empty stored value (the user cleared
+     * the field) falls back to the default, so a blank input never renders an
+     * empty status line.
+     * @returns the effective status text.
+     */
+    getDisplayLabel(): string;
+    /**
      * Adopt the scope's accepted durable text without writing it back.
      * @param host - the constructor-narrowed scope driving this adoption.
      */

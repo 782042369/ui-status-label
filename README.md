@@ -2,7 +2,7 @@
 
 把你的鲸鱼娘思考时的 deep diving 自定义成任意你想要的样子。
 
-为 **dsh Web** 聊天视图提供可配置的运行中轮次状态文案：General 设置区的一行文本输入，加上聊天视图在运行时钟旁读取的可选 `conversationStatus` 服务。插件注册持久的 `ui-status-label` settings 命名空间（默认 `小难梁在0721`）；在设置行输入新文字后，聊天视图在轮次运行期间（等待首 token、工具执行、流式输出）显示的状态文案随之更新。选择持久化在 `$DSH_HOME/settings.yaml`，跟随同一个用户 home 跨越 Web 端口。
+为 **dsh Web** 聊天视图提供可配置的运行中轮次状态文案：General 设置区的一行文本输入，插件把聊天视图运行状态栏的文案替换为你输入的文字（支持 DOM 注入和上游 `conversationStatus` 服务两条路径，见[兼容性](#兼容性)）。插件注册持久的 `ui-status-label` settings 命名空间（默认 `小难梁在0721`）；在设置行输入新文字后，聊天视图在轮次运行期间（等待首 token、工具执行、流式输出）显示的状态文案随之更新。选择持久化在 `$DSH_HOME/settings.yaml`，跟随同一个用户 home 跨越 Web 端口。
 
 ## 前提
 
@@ -26,7 +26,7 @@ dsh plugin --profile web add dsh-ui-status-label
 
 卸载用 `dsh plugin --profile web remove dsh-ui-status-label`。
 
-> 如果你的 dsh 发行版已通过 `@deepseek-ai/dsh-web-app` 在盒内挂载 `ui-status-label` 行，请勿再独立安装本包——`ui-status-label` settings 命名空间会注册两次。
+> 仅在使用内置了本插件的定制 dsh 构建（如 deepseek-harness 仓库本地构建）时，不要重复安装——`ui-status-label` settings 命名空间会注册两次。官方发布版未内置本插件，正常安装即可。
 
 ## 兼容性
 
@@ -47,7 +47,7 @@ dsh plugin --profile web add dsh-ui-status-label
 4. 找到「**运行状态文案**」一行，在输入框里输入你想要的文字（例如"努力干活中"）
 5. **输入即生效，无需保存**——下次智能体运行期间，聊天视图的状态行就会显示你输入的文字
 
-清空输入框会回到 schema 默认值 `小难梁在0721`。文案按用户而非按会话，上限 40 字符。
+清空输入框会回到默认文案 `小难梁在0721`。文案按用户而非按会话，上限 40 字符。
 
 ## 从源码构建
 
@@ -64,8 +64,9 @@ peer 依赖（dsh-* 核心包）按设计不在此解析——它们由 dsh 运�
 - `src/schema.ts` — 仅 node 半边；`ui-status-label` 设置 schema（放在浏览器 bundle 之外，运行时不依赖 schemastery）。
 - `src/status-settings.ts` — 两个半边共享的常量与 section 类型。
 - `src/client/StatusLabelRow.tsx` — General 设置文本行。
-- `src/client/status-label-policy.ts` — 实时 snapshot store、持久化写穿、以及采纳 Host 侧变更。
-- `src/client/index.ts` — 注册设置行并提供 `conversationStatus` 服务；把本插件从 cordis.yml 组合掉后，ui-conversation 的内置文案保持原样。
+- `src/client/status-label-policy.ts` — 实时 snapshot store、持久化写穿、采纳 Host 侧变更，以及空值回退默认。
+- `src/client/status-label-injector.ts` — DOM 兜底：把官方硬编码的 `Deep diving...` 文本替换为配置文案（上游合入扩展点后自动让位）。
+- `src/client/index.ts` — 注册设置行、提供 `conversationStatus` 服务并启动 DOM 注入器；把本插件从 cordis.yml 组合掉后，ui-conversation 的内置文案保持原样。
 
 ## 模型体验
 

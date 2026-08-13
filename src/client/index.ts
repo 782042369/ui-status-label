@@ -15,7 +15,7 @@ import { StatusLabelRow } from './StatusLabelRow.tsx'
 import { StatusLabelPolicy } from './status-label-policy.ts'
 import { installStatusLabelInjector } from './status-label-injector.ts'
 import { en, NS, zh, type StatusLabelKey } from './locales.ts'
-import { STATUS_NAMESPACE, type StatusLabelSettings } from '../status-settings.ts'
+import { STATUS_NAMESPACE, DEFAULT_STATUS_LABEL, type StatusLabelSettings } from '../status-settings.ts'
 
 /**
  * Optional running-turn status provider the conversation chat view reads via
@@ -60,10 +60,13 @@ export function apply(ctx: Context): void {
   // The chat view reaches this face via ctx.get, so its absence — this plugin
   // composed out — is the built-in label state.
   const status: ConversationStatus = {
-    label: () => policy.statusLabel.getSnapshot(),
+    label: () => policy.getDisplayLabel(),
   }
   ctx.provide('conversationStatus', status)
   // DOM fallback for official releases that hard-code the status text and do
   // not read conversationStatus yet; inert once an upstream label renders.
-  ctx.effect(() => installStatusLabelInjector(policy.statusLabel), 'ui-status-label: dom status injector')
+  ctx.effect(
+    () => installStatusLabelInjector(policy.statusLabel, DEFAULT_STATUS_LABEL),
+    'ui-status-label: dom status injector',
+  )
 }

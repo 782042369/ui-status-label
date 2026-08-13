@@ -18,15 +18,16 @@ const STATUS_SELECTOR = '[role="status"]'
 /**
  * Install the DOM fallback injector.
  * @param label - reactive source of the user-configured status text.
+ * @param fallback - text shown when the stored label is empty (cleared field).
  * @returns the disposer removing the observer and the subscription.
  */
-export function installStatusLabelInjector(label: SnapshotStore<string>): () => void {
+export function installStatusLabelInjector(label: SnapshotStore<string>, fallback: string): () => void {
   if (typeof document === 'undefined') return () => {}
   // Text nodes this injector wrote; live preference changes rewrite them, and
   // an upstream label (never injected) is left alone.
   const injected = new WeakSet<Text>()
   const replace = (): void => {
-    const text = label.getSnapshot()
+    const text = label.getSnapshot() || fallback
     for (const element of document.querySelectorAll<HTMLElement>(STATUS_SELECTOR)) {
       for (const node of element.childNodes) {
         if (!(node instanceof Text)) continue

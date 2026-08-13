@@ -11,7 +11,8 @@ import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
 /**
  * Install the DOM fallback injector.
  * @param label - reactive source of the user-configured status text.
+ * @param fallback - text shown when the stored label is empty (cleared field).
  * @returns the disposer removing the observer and the subscription.
  */
-export declare function installStatusLabelInjector(label: SnapshotStore<string>): () => void;
+export declare function installStatusLabelInjector(label: SnapshotStore<string>, fallback: string): () => void;
 //# sourceMappingURL=status-label-injector.d.ts.map
