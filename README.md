@@ -30,13 +30,12 @@ dsh plugin --profile web add dsh-ui-status-label
 
 ## 兼容性
 
-本插件的文案注入依赖 ui-conversation 的 `conversationStatus` 可选服务扩展点（与官方已有的 `chatFileMentions` 同款模式）。该扩展点已随本插件的上游改动合入 deepseek-harness 仓库（`packages/client/ui-conversation`：`contract/slots.ts` 的 `ConversationStatus` / `DEFAULT_STATUS_LABEL`、`ChatView.tsx` 的 `TurnStatus` 注入、`apply.ts` 的可选服务读取）。
+本插件同时提供两条生效路径，**官方正式版（含 0.1.0-rc.6）即可直接生效**：
 
-**在官方合入该扩展点之前**，针对官方发布版（`0.0.1-rc.1` / `0.1.0-rc.6`）：
+1. **DOM 注入（默认兜底）**：插件监听聊天视图的运行状态元素，把官方硬编码的 `Deep diving...` 文本替换为你配置的文案。不依赖官方任何新机制，装完即用。
+2. **`conversationStatus` 可选服务**：当 ui-conversation 带上了扩展点（随 `UPSTREAM-EXTENSION.patch` 合入官方后），聊天视图直接渲染你配置的文案，DOM 注入自动让位，两者不会冲突。
 
-- 安装本身正常——本插件的依赖范围 `>=0.0.1-rc.1 <0.2.0` 已覆盖两条版本线，peer 不再冲突。
-- 设置行会出现，但官方版 `ChatView` 尚未读取 `conversationStatus` 服务，状态文案保持官方的 `Deep diving...`（功能暂不生效，不报错）。
-- 合入扩展点后无需改动本插件，文案注入立即生效。
+- 安装请用 `dsh plugin add`，不要单独 `pnpm install` 期望完整解析（官方 npm 发布链尚不完整，部分传递依赖未发布；本仓库的 `pnpm-workspace.yaml` 为此关闭了 peer 自动安装）。
 
 ## 设置
 

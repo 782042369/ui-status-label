@@ -13,6 +13,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import { StatusLabelRow } from './StatusLabelRow.tsx'
 import { StatusLabelPolicy } from './status-label-policy.ts'
+import { installStatusLabelInjector } from './status-label-injector.ts'
 import { en, NS, zh, type StatusLabelKey } from './locales.ts'
 import { STATUS_NAMESPACE, type StatusLabelSettings } from '../status-settings.ts'
 
@@ -62,4 +63,7 @@ export function apply(ctx: Context): void {
     label: () => policy.statusLabel.getSnapshot(),
   }
   ctx.provide('conversationStatus', status)
+  // DOM fallback for official releases that hard-code the status text and do
+  // not read conversationStatus yet; inert once an upstream label renders.
+  ctx.effect(() => installStatusLabelInjector(policy.statusLabel), 'ui-status-label: dom status injector')
 }

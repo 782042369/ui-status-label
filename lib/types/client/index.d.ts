@@ -8,16 +8,6 @@
  */
 import type { Context } from '@deepseek-ai/cordis';
 import { type StatusLabelKey } from './locales.ts';
-/**
- * Optional running-turn status provider the conversation chat view reads via
- * `ctx.get('conversationStatus')`. Declared here rather than imported from
- * ui-conversation so the plugin stays installable against releases that do
- * not yet ship the contract (service faces are structural at runtime).
- */
-export interface ConversationStatus {
-    /** Current running-turn status text. */
-    label(): string;
-}
 declare module '@deepseek-ai/dsh-client-ui-slots' {
     interface LocaleNamespaceMap {
         /** Running status text row copy. */
