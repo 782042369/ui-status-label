@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-status-label`.
- * @module @deepseek-ai/dsh-client-ui-status-label/invariant
+ * Package-owned invariant companion for `dsh-ui-status-label`.
+ * @module dsh-ui-status-label/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-status-label'
+const PACKAGE_NAME = 'dsh-ui-status-label'
 
 /** Cordis companion plugin name. */
 export const name = 'client-ui-status-label-invariant'

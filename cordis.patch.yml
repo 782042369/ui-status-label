@@ -1,6 +1,5 @@
-# The ui-status-label bundle patch: mounts the plugin row into the Web roster.
-# Web profiles (dsh-web-app) already list this row in-box; this patch exists so
-# older or custom compositions can install the plugin standalone.
+# The ui-status-label bundle patch: mounts the plugin row into the Web roster
+# of any profile that installs this package.
 - insert:
     - id: ui-status-label
-      name: '@deepseek-ai/dsh-client-ui-status-label'
+      name: dsh-ui-status-label

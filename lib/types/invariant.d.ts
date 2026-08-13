@@ -1,6 +1,6 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-status-label`.
- * @module @deepseek-ai/dsh-client-ui-status-label/invariant
+ * Package-owned invariant companion for `dsh-ui-status-label`.
+ * @module dsh-ui-status-label/invariant
  */
 import type { Context } from '@deepseek-ai/cordis';
 /** Cordis companion plugin name. */

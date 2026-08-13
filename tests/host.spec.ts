@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { Settings, settingsNamespace, type SettingsNamespace } from '@deepseek-ai/dsh-settings'
 import {
   DEFAULT_STATUS_LABEL, STATUS_NAMESPACE, apply,
-} from '@deepseek-ai/dsh-client-ui-status-label'
+} from 'dsh-ui-status-label'
 
 class MemorySettings extends Settings {
   readonly writable = true
