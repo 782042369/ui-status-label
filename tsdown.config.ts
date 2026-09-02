@@ -18,6 +18,7 @@ import { transform } from 'lightningcss'
  */
 const PLATFORM_MODULES = [
   'react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', '@deepseek-ai/cordis',
+  '@deepseek-ai/dsh-client-store',
   '@deepseek-ai/dsh-client-ui-slots',
   '@deepseek-ai/dsh-client-web-react',
   '@deepseek-ai/dsh-client-ui-primitives',
@@ -57,8 +58,8 @@ const clientBundle: UserConfig = {
   dts: false,
   sourcemap: true,
   clean: false,
-  // Platform modules and the runtime store stay external (loader table);
-  // every other dependency inlines into the bundle.
+  // Platform modules and both host-generation store entries stay external
+  // (loader table); every other dependency inlines into the bundle.
   deps: {
     neverBundle: [...PLATFORM_MODULES, '@deepseek-ai/dsh-client-runtime/client'],
     alwaysBundle: (id: string) =>

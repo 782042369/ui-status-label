@@ -1,8 +1,21 @@
 // @vitest-environment jsdom
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { stubSettingsScope } from '@deepseek-ai/dsh-client-test-runtime'
 import { StatusLabelPolicy, DEFAULT_STATUS_LABEL } from '../src/client/status-label-policy.ts'
+import { setSnapshotStoreModuleForTests } from '../src/client/store-compat.ts'
 import type { StatusLabelSettings } from '../src/status-settings.ts'
+
+beforeAll(async () => {
+  // The policy resolves createSnapshotStore through the browser module table
+  // (store package on alpha hosts, runtime entry on legacy hosts); vite specs
+  // have no bundle-factory require, so hand it whichever module this checkout
+  // ships.
+  try {
+    setSnapshotStoreModuleForTests(await import('@deepseek-ai/dsh-client-store'))
+  } catch {
+    setSnapshotStoreModuleForTests(await import('@deepseek-ai/dsh-client-runtime/client'))
+  }
+})
 
 describe('StatusLabelPolicy', () => {
   it('defaults to the built-in label and publishes before persisting', () => {

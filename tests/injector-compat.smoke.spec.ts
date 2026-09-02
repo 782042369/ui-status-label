@@ -7,6 +7,31 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
 import { installStatusLabelInjector } from '../src/client/status-label-injector.ts'
+import { createCompatSnapshotStore, setSnapshotStoreModuleForTests } from '../src/client/store-compat.ts'
+
+/** Fake snapshot-store module proving the compat seam is injectable. */
+const fakeStoreModule = {
+  createSnapshotStore: <T>(initial: T) => {
+    let value = initial
+    const subs = new Set<() => void>()
+    return {
+      getSnapshot: () => value,
+      set: (next: T) => { value = next; for (const fn of subs) fn() },
+      subscribe: (fn: () => void) => { subs.add(fn); return () => { subs.delete(fn) } },
+    }
+  },
+}
+
+setSnapshotStoreModuleForTests(fakeStoreModule)
+
+ describe('createCompatSnapshotStore', () => {
+  it('resolves through the injected module and stays live', () => {
+    const store = createCompatSnapshotStore('种子')
+    expect(store.getSnapshot()).toBe('种子')
+    store.set('改值')
+    expect(store.getSnapshot()).toBe('改值')
+  })
+})
 
 const DEFAULT = '小难梁在0721'
 

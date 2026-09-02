@@ -5,8 +5,8 @@
  * optional `conversationStatus` service this plugin provides.
  */
 import {
-  createSnapshotStore, type SettingsScope, type SnapshotStore,
-} from '@deepseek-ai/dsh-client-runtime/client'
+  createCompatSnapshotStore, type SettingsScope, type SnapshotStore,
+} from './store-compat.ts'
 import { DEFAULT_STATUS_LABEL, STATUS_LABEL_FIELD } from '../status-settings.ts'
 import type { StatusLabelSettings } from '../status-settings.ts'
 
@@ -19,7 +19,7 @@ export { DEFAULT_STATUS_LABEL } from '../status-settings.ts'
  */
 export class StatusLabelPolicy {
   /** Reactive status text source for the Settings row and the service. */
-  readonly statusLabel: SnapshotStore<string> = createSnapshotStore(DEFAULT_STATUS_LABEL)
+  readonly statusLabel: SnapshotStore<string> = createCompatSnapshotStore(DEFAULT_STATUS_LABEL)
   private readonly host: SettingsScope<StatusLabelSettings> | undefined
 
   /**

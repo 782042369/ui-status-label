@@ -10,7 +10,7 @@
  * contract), the text never matches a fallback and this injector stays inert —
  * the two paths coexist.
  */
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SnapshotStore } from './store-compat.ts'
 
 /**
  * Official status texts this injector replaces, across dsh-client releases:
