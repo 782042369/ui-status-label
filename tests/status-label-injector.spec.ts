@@ -9,12 +9,15 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-/** Official TurnStatus markup: status div with the hard-coded text plus the running-clock span. */
-function mountOfficialTurnStatus(): HTMLElement {
+/**
+ * Official TurnStatus markup: status div with the built-in label plus the running-clock span.
+ * @param text - the rendered official label (version/locale dependent).
+ */
+function mountOfficialTurnStatus(text: string = 'Deep diving...'): HTMLElement {
   const div = document.createElement('div')
   div.setAttribute('role', 'status')
   div.setAttribute('aria-live', 'polite')
-  div.appendChild(document.createTextNode('Deep diving...'))
+  div.appendChild(document.createTextNode(text))
   const clock = document.createElement('span')
   clock.setAttribute('aria-hidden', 'true')
   clock.textContent = '2分05秒'
@@ -70,6 +73,24 @@ describe('installStatusLabelInjector', () => {
     document.body.appendChild(div)
     await flushObserver()
     expect((div.childNodes[0] as Text).nodeValue).toBe('官方文案')
+    dispose()
+  })
+
+  it('replaces the localized zh fallback shipped by dsh-client >= 0.1.2-alpha', async () => {
+    const label = createSnapshotStore('自定义文案')
+    const dispose = installStatusLabelInjector(label, DEFAULT)
+    const div = mountOfficialTurnStatus('深度求索中...')
+    await flushObserver()
+    expect((div.childNodes[0] as Text).nodeValue).toBe('自定义文案')
+    dispose()
+  })
+
+  it('replaces the Unicode-ellipsis variant of the official fallback', async () => {
+    const label = createSnapshotStore('自定义文案')
+    const dispose = installStatusLabelInjector(label, DEFAULT)
+    const div = mountOfficialTurnStatus('Deep diving…')
+    await flushObserver()
+    expect((div.childNodes[0] as Text).nodeValue).toBe('自定义文案')
     dispose()
   })
 
