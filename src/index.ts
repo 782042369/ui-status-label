@@ -1,14 +1,14 @@
 /**
- * Status-label plugin, node half. Registers the durable `ui-status-label`
- * settings namespace when a settings provider exists; the browser half ships
- * via exports["./client"], discovered through the package.json dsh.client
+ * Status-label plugin, node half. The durable preference is this entry's
+ * volatile `statusLabel` config field (schema in ./schema.ts), served to the
+ * browser through the settings forms service; the browser half ships via
+ * exports["./client"], discovered through the package.json dsh.client
  * declaration.
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { settingsNamespace } from '@deepseek-ai/dsh-settings'
-import { StatusLabelSettingsSchema } from './schema.ts'
-import { STATUS_NAMESPACE } from './status-settings.ts'
+
+export { Config } from './schema.ts'
 
 export {
   DEFAULT_STATUS_LABEL, STATUS_LABEL_FIELD, STATUS_NAMESPACE,
@@ -16,14 +16,14 @@ export {
 } from './status-settings.ts'
 
 /**
- * Register the durable status-label section when a settings provider exists.
- * @param ctx - Host context whose optional settings service owns the section.
+ * Keep the auto-generated Plugins-page form out: this plugin presents its
+ * single field itself through the General settings row. Reads and writes
+ * through configForms are unaffected — the policy only stops the generated
+ * presentation, per the dsh-settings own-page contract.
+ * @param ctx - Host context whose optional settings service owns the presentation policy.
  */
 export function apply(ctx: Context): void {
-  ctx.inject(['settings'], (settingsCtx) => {
-    settingsCtx.settings.register(
-      settingsNamespace(STATUS_NAMESPACE),
-      StatusLabelSettingsSchema,
-    )
+  ctx.inject(['settings'], (child) => {
+    child.effect(() => child.settings.configure({ auto: false }, ctx.fiber))
   })
 }

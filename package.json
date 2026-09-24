@@ -1,7 +1,7 @@
 {
   "name": "dsh-ui-status-label",
   "description": "Configurable running-turn status text for dsh Web: General Settings row plus the conversationStatus provider for the chat view",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
@@ -42,12 +42,12 @@
   "scripts": {
     "bundle": "tsdown",
     "prepare": "tsdown",
-    "pack": "pnpm run bundle && pnpm pack"
+    "pack": "pnpm run bundle && pnpm pack",
+    "test": "vitest run"
   },
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/dsh-settings": ">=0.0.1-rc.1 <0.2.0",
-    "@deepseek-ai/schemastery": "^3.18.1",
+    "@deepseek-ai/schemastery": "^3.18.4",
     "react": "^18.2.0"
   },
   "peerDependencies": {
@@ -61,11 +61,18 @@
     "@deepseek-ai/dsh-invariants": ">=0.0.1-rc.1 <0.2.0"
   },
   "devDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4",
+    "@deepseek-ai/dsh-client-runtime": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-client-web-react": "0.1.0-rc.7",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "~18.3.1",
+    "jsdom": "^30.1.1",
     "lightningcss": "^1.32.0",
     "react": "^18.2.0",
+    "react-dom": "^18.3.1",
     "tsdown": "^0.22.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.1"
   },
   "files": [
     "lib",

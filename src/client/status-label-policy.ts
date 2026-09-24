@@ -5,8 +5,12 @@
  * optional `conversationStatus` service this plugin provides.
  */
 import {
-  createSnapshotStore, type SettingsScope, type SnapshotStore,
+  createSnapshotStore, type SnapshotStore,
 } from '@deepseek-ai/dsh-client-runtime/client'
+// Type-only: the ConfigForm face over this entry's volatile config. Cross-plugin
+// collaboration goes through the service, never a value import (client bundle
+// purity gate).
+import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client'
 import { DEFAULT_STATUS_LABEL, STATUS_LABEL_FIELD } from '../status-settings.ts'
 import type { StatusLabelSettings } from '../status-settings.ts'
 
@@ -20,15 +24,16 @@ export { DEFAULT_STATUS_LABEL } from '../status-settings.ts'
 export class StatusLabelPolicy {
   /** Reactive status text source for the Settings row and the service. */
   readonly statusLabel: SnapshotStore<string> = createSnapshotStore(DEFAULT_STATUS_LABEL)
-  private readonly host: SettingsScope<StatusLabelSettings> | undefined
+  private readonly host: ConfigForm<StatusLabelSettings> | undefined
 
   /**
-   * @param host - durable settings scope owned by the providing plugin;
-   * absent compositions stay process-local. The adoption subscription shares
-   * the scope's plugin lifetime — a disposed scope never publishes again, so
-   * the policy needs no release hook.
+   * @param host - shared form over this entry's volatile config; absent
+   * compositions stay process-local, and an `unavailable` form (namespace not
+   * served, or a connection keeping preferences process-local) simply never
+   * adopts. The adoption subscription shares the form's service lifetime — a
+   * disposed form never publishes again, so the policy needs no release hook.
    */
-  constructor(host?: SettingsScope<StatusLabelSettings>) {
+  constructor(host?: ConfigForm<StatusLabelSettings>) {
     this.host = host
     if (host !== undefined) {
       host.subscribe(() => { this.adopt(host) })
@@ -58,10 +63,12 @@ export class StatusLabelPolicy {
   }
 
   /**
-   * Adopt the scope's accepted durable text without writing it back.
-   * @param host - the constructor-narrowed scope driving this adoption.
+   * Adopt the form's accepted durable text without writing it back. Before
+   * the first accepted section (`loading`/`unavailable`) the snapshot carries
+   * no value and the live label keeps whatever it holds.
+   * @param host - the constructor-narrowed form driving this adoption.
    */
-  private adopt(host: SettingsScope<StatusLabelSettings>): void {
+  private adopt(host: ConfigForm<StatusLabelSettings>): void {
     const section = host.getSnapshot().value
     if (section === undefined || this.statusLabel.getSnapshot() === section.statusLabel) return
     this.statusLabel.set(section.statusLabel)

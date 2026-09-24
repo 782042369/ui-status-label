@@ -7,7 +7,7 @@
  * and the provider, leaving ui-conversation's built-in label in place.
  */
 import type { Context } from '@deepseek-ai/cordis'
-// Type-only: the ctx.settingsScope Context merge. Cross-plugin collaboration
+// Type-only: the ctx.configForms Context merge. Cross-plugin collaboration
 // goes through the service, never a value import (client bundle purity gate).
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
@@ -36,7 +36,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 }
 
 /** Services required for the settings row registration and its dictionaries. */
-export const inject = ['slots', 'settingsScope', 'locale', 'connection', 'remote']
+export const inject = ['slots', 'configForms', 'locale', 'connection', 'remote']
 
 /**
  * Client plugin body: register the dictionaries, the settings row, and the
@@ -44,8 +44,11 @@ export const inject = ['slots', 'settingsScope', 'locale', 'connection', 'remote
  * @param ctx - client root context.
  */
 export function apply(ctx: Context): void {
-  const scope = ctx.settingsScope.bind<StatusLabelSettings>({ namespace: STATUS_NAMESPACE })
-  const policy = new StatusLabelPolicy(scope)
+  // The durable preference is this entry's volatile `statusLabel` config
+  // field; the shared forms service serves it under the entry's profile id
+  // (STATUS_NAMESPACE matches the id this bundle's cordis.patch.yml inserts).
+  const form = ctx.configForms.get<StatusLabelSettings>(STATUS_NAMESPACE)
+  const policy = new StatusLabelPolicy(form)
   ctx.effect(() => { return ctx.locale.register(NS, { zh, en }) }, 'ui-status-label: dictionaries')
   ctx.slots.inject('settings.general.item', () => ctx.slots.register({
     name: 'settings.general.item',

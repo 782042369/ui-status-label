@@ -1,6 +1,10 @@
 /** Running-turn status preference: constants and the section type shared by the node and browser halves. */
 
-/** Settings namespace owned by this plugin. */
+/**
+ * Settings identity owned by this plugin: the profile entry id this bundle's
+ * cordis.patch.yml inserts, under which the forms service serves the entry's
+ * volatile `statusLabel` config field.
+ */
 export const STATUS_NAMESPACE = 'ui-status-label'
 
 /** Field carrying the running-turn status text shown in the chat view. */

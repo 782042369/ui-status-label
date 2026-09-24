@@ -6,20 +6,20 @@
 
 [![dsh-suite Featured Pick](https://whyihaveyou.github.io/dsh-suite/assets/badges/ui-status-label.png)](https://whyihaveyou.github.io/dsh-suite/)
 
-为 **dsh Web** 聊天视图提供可配置的运行中轮次状态文案：General 设置区的一行文本输入，插件把聊天视图运行状态栏的文案替换为你输入的文字（支持 DOM 注入和上游 `conversationStatus` 服务两条路径，见[兼容性](#兼容性)）。插件注册持久的 `ui-status-label` settings 命名空间（默认 `小难梁在0721`）；在设置行输入新文字后，聊天视图在轮次运行期间（等待首 token、工具执行、流式输出）显示的状态文案随之更新。选择持久化在 `$DSH_HOME/settings.yaml`，跟随同一个用户 home 跨越 Web 端口。
+为 **dsh Web** 聊天视图提供可配置的运行中轮次状态文案：General 设置区的一行文本输入，插件把聊天视图运行状态栏的文案替换为你输入的文字（支持 DOM 注入和上游 `conversationStatus` 服务两条路径，见[兼容性](#兼容性)）。插件的持久偏好是自身条目配置里的 `statusLabel` 字段（`.volatile()`，默认 `小难梁在0721`），由 settings 表单服务（`configForms`）按条目 id `ui-status-label` 提供给浏览器半边读写；在设置行输入新文字后，聊天视图在轮次运行期间（等待首 token、工具执行、流式输出）显示的状态文案随之更新。写入经配置编辑器持久化到当前 profile 的 Cordis patch。
 
 ## 前提
 
-- **dsh Web**（`dsh --profile web` 或自定义 Web 组合）。本插件只面向浏览器交互面；headless/TUI profile 装它没有意义。
-- 依赖分两类：`@deepseek-ai/cordis`、`dsh-client-*` 等为 **peer 依赖**（由 dsh 安装提供）；`@deepseek-ai/dsh-settings`、`schemastery` 为**直接依赖**（从 npm 安装）。仓库内的 `pnpm-workspace.yaml` 已关闭 peer 自动安装（`autoInstallPeers: false`），clone 后直接 `pnpm install` 即可完成直接依赖。
+- **dsh Web**（`dsh --profile web` 或自定义 Web 组合），**dsh ≥ 0.1.7-rc.1**：0.1.7 起 client 侧设置面收敛为 `configForms`/`settingsSchema` 服务（旧的 `settingsScope` 服务已移除），本插件 0.2.0 起按新契约硬注入 `configForms`，在更老的运行时上会一直 pending。headless/TUI profile 装它没有意义。
+- 依赖分两类：`@deepseek-ai/cordis`、`dsh-client-*` 等为 **peer 依赖**（由 dsh 安装提供）；`schemastery` 为**直接依赖**（从 npm 安装）。仓库内的 `pnpm-workspace.yaml` 已关闭 peer 自动安装（`autoInstallPeers: false`），clone 后直接 `pnpm install` 即可完成直接依赖。
 
 ## 安装
 
 本包声明了 `dsh.bundle`，`dsh plugin add` 会自动激活它的 `cordis.patch.yml` 层（把 `dsh-ui-status-label` 行插入 Web roster）。
 
 ```sh
-# ① tarball（需要先在仓库根执行 pnpm pack 生成 dsh-ui-status-label-0.1.0.tgz）
-dsh plugin --profile web add ./dsh-ui-status-label-0.1.0.tgz
+# ① tarball（需要先在仓库根执行 pnpm pack 生成 dsh-ui-status-label-0.2.0.tgz）
+dsh plugin --profile web add ./dsh-ui-status-label-0.2.0.tgz
 
 # ② git 仓库直装
 dsh plugin --profile web add github:alingalingling/ui-status-label
@@ -67,7 +67,7 @@ allowBuilds:
 ## 从源码构建
 
 ```sh
-pnpm install        # 安装直接依赖（dsh-settings、schemastery 等，均已发布 npm）
+pnpm install        # 安装直接依赖（schemastery 等，均已发布 npm）
 pnpm run bundle     # 重建 JS 产物：lib/index.js（node 半边）+ lib/client.js（浏览器半边）+ lib/invariant.js
 pnpm pack           # 生成 tarball（含 lib/ 与 cordis.patch.yml）
 ```
@@ -76,7 +76,7 @@ pnpm pack           # 生成 tarball（含 lib/ 与 cordis.patch.yml）
 
 ## 结构
 
-- `src/schema.ts` — 仅 node 半边；`ui-status-label` 设置 schema（放在浏览器 bundle 之外，运行时不依赖 schemastery）。
+- `src/schema.ts` — 仅 node 半边；条目配置 schema（`statusLabel` 为 `.volatile()` 字段，经 configForms 表单服务暴露；放在浏览器 bundle 之外，运行时不依赖 schemastery）。
 - `src/status-settings.ts` — 两个半边共享的常量与 section 类型。
 - `src/client/StatusLabelRow.tsx` — General 设置文本行。
 - `src/client/status-label-policy.ts` — 实时 snapshot store、持久化写穿、采纳 Host 侧变更，以及空值回退默认。

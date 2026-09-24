@@ -4,7 +4,8 @@
  * settings; ui-conversation's chat view consumes the value through the
  * optional `conversationStatus` service this plugin provides.
  */
-import { type SettingsScope, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
+import { type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
+import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client';
 import type { StatusLabelSettings } from '../status-settings.ts';
 export { DEFAULT_STATUS_LABEL } from '../status-settings.ts';
 /**
@@ -17,12 +18,13 @@ export declare class StatusLabelPolicy {
     readonly statusLabel: SnapshotStore<string>;
     private readonly host;
     /**
-     * @param host - durable settings scope owned by the providing plugin;
-     * absent compositions stay process-local. The adoption subscription shares
-     * the scope's plugin lifetime — a disposed scope never publishes again, so
-     * the policy needs no release hook.
+     * @param host - shared form over this entry's volatile config; absent
+     * compositions stay process-local, and an `unavailable` form (namespace not
+     * served, or a connection keeping preferences process-local) simply never
+     * adopts. The adoption subscription shares the form's service lifetime — a
+     * disposed form never publishes again, so the policy needs no release hook.
      */
-    constructor(host?: SettingsScope<StatusLabelSettings>);
+    constructor(host?: ConfigForm<StatusLabelSettings>);
     /**
      * Change the running-turn status text; the live value publishes before the
      * durable write starts.
@@ -37,8 +39,8 @@ export declare class StatusLabelPolicy {
      */
     getDisplayLabel(): string;
     /**
-     * Adopt the scope's accepted durable text without writing it back.
-     * @param host - the constructor-narrowed scope driving this adoption.
+     * Adopt the form's accepted durable text without writing it back.
+     * @param host - the constructor-narrowed form driving this adoption.
      */
     private adopt;
 }
