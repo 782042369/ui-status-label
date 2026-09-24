@@ -1,5 +1,5 @@
 /** General Settings row for the running-turn status text shown in the chat view. */
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SnapshotStore } from '@deepseek-ai/dsh-client-store'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import css from './StatusLabelRow.module.css'
 

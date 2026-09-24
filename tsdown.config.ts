@@ -57,13 +57,13 @@ const clientBundle: UserConfig = {
   dts: false,
   sourcemap: true,
   clean: false,
-  // Platform modules and the runtime store stay external (loader table);
-  // every other dependency inlines into the bundle.
+  // Platform modules and the shared snapshot store stay external (loader
+  // table); every other dependency inlines into the bundle.
   deps: {
-    neverBundle: [...PLATFORM_MODULES, '@deepseek-ai/dsh-client-runtime/client'],
+    neverBundle: [...PLATFORM_MODULES, '@deepseek-ai/dsh-client-store'],
     alwaysBundle: (id: string) =>
       !PLATFORM_MODULES.includes(id as (typeof PLATFORM_MODULES)[number])
-      && id !== '@deepseek-ai/dsh-client-runtime/client',
+      && id !== '@deepseek-ai/dsh-client-store',
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),

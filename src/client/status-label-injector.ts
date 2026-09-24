@@ -7,7 +7,7 @@
  * itself (the conversationStatus contract), the text never matches the
  * official fallback and this injector stays inert — the two paths coexist.
  */
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SnapshotStore } from '@deepseek-ai/dsh-client-store'
 
 /** The official hard-coded status text this injector replaces. */
 const OFFICIAL_FALLBACK_TEXT = 'Deep diving...'

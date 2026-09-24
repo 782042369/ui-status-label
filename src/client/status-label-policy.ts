@@ -6,7 +6,7 @@
  */
 import {
   createSnapshotStore, type SnapshotStore,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@deepseek-ai/dsh-client-store'
 // Type-only: the ConfigForm face over this entry's volatile config. Cross-plugin
 // collaboration goes through the service, never a value import (client bundle
 // purity gate).

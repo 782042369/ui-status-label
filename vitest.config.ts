@@ -12,8 +12,8 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: '@deepseek-ai/dsh-client-runtime/client',
-        replacement: fileURLToPath(new URL('./tests/stubs/dsh-client-runtime-client.ts', import.meta.url)),
+        find: /^@deepseek-ai\/dsh-client-store$/,
+        replacement: fileURLToPath(new URL('./tests/stubs/dsh-client-store.ts', import.meta.url)),
       },
       {
         find: '@deepseek-ai/dsh-client-web-react',

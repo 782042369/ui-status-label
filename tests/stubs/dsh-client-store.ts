@@ -1,6 +1,6 @@
 /**
  * Standalone vitest stub for the frozen-module-table runtime export the dsh
- * shell serves in the browser (`@deepseek-ai/dsh-client-runtime/client`). The
+ * shell serves in the browser (`@deepseek-ai/dsh-client-store`). The
  * npm-published wrapper can only execute inside the shell's `__ModuleLoader__`
  * table, so tests alias the subpath here instead. Only the surface this
  * plugin's tests touch is provided: the snapshot store primitives.

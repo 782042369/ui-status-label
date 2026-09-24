@@ -7,7 +7,7 @@
  * itself (the conversationStatus contract), the text never matches the
  * official fallback and this injector stays inert — the two paths coexist.
  */
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
+import type { SnapshotStore } from '@deepseek-ai/dsh-client-store';
 /**
  * Install the DOM fallback injector.
  * @param label - reactive source of the user-configured status text.

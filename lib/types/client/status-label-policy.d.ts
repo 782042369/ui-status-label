@@ -4,7 +4,7 @@
  * settings; ui-conversation's chat view consumes the value through the
  * optional `conversationStatus` service this plugin provides.
  */
-import { type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
+import { type SnapshotStore } from '@deepseek-ai/dsh-client-store';
 import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client';
 import type { StatusLabelSettings } from '../status-settings.ts';
 export { DEFAULT_STATUS_LABEL } from '../status-settings.ts';
